@@ -188,24 +188,7 @@ class StatusResponse(BaseModel):
 async def health():
     return {"status": "ok", "lang": TESS_LANG, "dpi": RENDER_DPI}
 
-@app.post("/extract-sync")
-async def extract_sync(
-    request: Request,
-    file: Optional[UploadFile] = File(None),
-    files: Optional[List[UploadFile]] = File(None),
-):
-    uploads = await collect_uploads_from_request(request, file, files)
-    if not uploads:
-        raise HTTPException(status_code=422, detail="Nenhum PDF encontrado no multipart.")
-    if len(uploads) > 1:
-        logging.info(f"/extract-sync recebeu {len(uploads)} arquivos; processando apenas o primeiro.")
-    uf = uploads[0]
-    if not uf.filename.lower().endswith(".pdf"):
-        raise HTTPException(400, f"Arquivo inválido (não PDF): {uf.filename}")
-    pdf_bytes = await uf.read()
-    loop = asyncio.get_running_loop()
-    result = await loop.run_in_executor(executor, extract_pdf_bytes, pdf_bytes, uf.filename)
-    return JSONResponse(result)
+
 
 @app.post("/extract-async", status_code=202)
 async def extract_async(
@@ -274,3 +257,4 @@ async def status(job_id: str):
         "result": job.get("result"),
         "error": job.get("error"),
     }
+
