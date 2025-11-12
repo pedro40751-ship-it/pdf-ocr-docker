@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pdf-ocr-api
+    container_name: pdf-ocr-api-1
     environment:
       MAX_WORKERS: "4"
       PAGE_TIMEOUT: "25"
@@ -23,4 +23,5 @@ services:
 networks:
   ocr_net:
     name: ocr_net
+
 
